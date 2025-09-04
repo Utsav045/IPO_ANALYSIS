@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="corporate">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPO Compass - Home</title>
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+  <!-- Navigation -->
+  <header>
+    <nav>
+      <h1>IPO Compass</h1>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">IPO List</a></li>
+        <li><a href="#">Analysis</a></li>
+        <li><a href="#">About</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="text-center bg-gradient-to-r from-primary to-secondary text-white py-16">
+    <h1 class="text-4xl font-bold mb-4">Welcome to IPO Compass</h1>
+    <p class="mb-6">Your comprehensive platform for IPO analysis and insights.</p>
+    <a href="#" class="btn btn-accent">Get Started</a>
+  </section>
+
+  <!-- Features -->
+  <section>
+    <h2 class="text-center">Key Features</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <article>
+        <h3 class="text-xl font-bold mb-2">IPO Tracking</h3>
+        <p>Track upcoming and recent IPOs with real-time data.</p>
+        <a href="#" class="btn btn-primary mt-4">Learn More</a>
+      </article>
+      <article>
+        <h3 class="text-xl font-bold mb-2">Market Analysis</h3>
+        <p>In-depth tools to evaluate IPO performance and trends.</p>
+        <a href="#" class="btn btn-secondary mt-4">Learn More</a>
+      </article>
+      <article>
+        <h3 class="text-xl font-bold mb-2">Investment Insights</h3>
+        <p>Get expert insights and recommendations.</p>
+        <a href="#" class="btn btn-accent mt-4">Learn More</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section>
+    <h2 class="text-center">Statistics</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body">
+          <h3>Total IPOs Tracked</h3>
+          <p class="text-2xl font-bold">1,250</p>
+        </div>
+      </div>
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body">
+          <h3>Average Return</h3>
+          <p class="text-2xl font-bold">15.2%</p>
+        </div>
+      </div>
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body">
+          <h3>Active Users</h3>
+          <p class="text-2xl font-bold">25,400</p>
+        </div>
+      </div>
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body">
+          <h3>Success Rate</h3>
+          <p class="text-2xl font-bold">89%</p>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary mt-6">Test DaisyUI Button</button>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>IPO Compass Ltd. - Providing reliable IPO insights since 2025</p>
+    <p>Copyright © 2025</p>
+  </footer>
+
+  <script src="{% static 'app.js' %}"></script>
+</body>
+</html>
+<style>
+  @import "tailwindcss/base";
+  @import "tailwindcss/components";
+  @import "tailwindcss/utilities";
+</style>

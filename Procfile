@@ -1,0 +1,1 @@
+web: gunicorn ipo_compass.wsgi

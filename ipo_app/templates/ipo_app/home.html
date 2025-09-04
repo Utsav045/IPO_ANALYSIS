@@ -1,0 +1,418 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="emerald">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPO Compass - Navigate Your Investment Journey</title>
+  <meta name="description" content="Professional IPO analysis platform with real-time data, AI insights, and expert recommendations for informed investment decisions.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+  <!-- JS -->
+  <script defer src="{% static 'scripts.js' %}"></script>
+  
+  <!-- Additional Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-base-100 to-base-200 overflow-x-hidden">
+
+  <!-- Navbar -->
+  <header class="navbar bg-base-100/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-base-300/50">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <a class="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center gap-2" href="#home">
+        <i class="fas fa-compass text-2xl"></i>
+        <span>IPO Compass</span>
+      </a>
+      <nav class="hidden lg:flex gap-1">
+        <a href="#home" class="btn btn-ghost hover:btn-primary rounded-lg">Home</a>
+        <a href="#features" class="btn btn-ghost hover:btn-primary rounded-lg">Features</a>
+        <a href="#upcoming" class="btn btn-ghost hover:btn-primary rounded-lg">IPOs</a>
+        <a href="#stats" class="btn btn-ghost hover:btn-primary rounded-lg">Analytics</a>
+        <a href="#about" class="btn btn-ghost hover:btn-primary rounded-lg">About</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <button id="themeToggle" class="btn btn-ghost btn-circle">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button class="btn btn-primary hidden md:inline-flex">
+          <i class="fas fa-user mr-2"></i>
+          Sign In
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero min-h-screen flex flex-col justify-center items-center text-center px-4">
+    <div class="mb-6 p-4 bg-primary/10 rounded-full">
+      <i class="fas fa-chart-line text-5xl text-primary"></i>
+    </div>
+    <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+      Navigate IPO Markets with Confidence
+    </h1>
+    <p class="max-w-2xl text-lg md:text-xl mb-8 text-base-content/80">
+      Professional IPO analysis platform with real-time data, AI insights, and expert recommendations for informed investment decisions.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <button class="btn btn-primary btn-lg px-8">
+        <i class="fas fa-rocket mr-2"></i>
+        Get Started Free
+      </button>
+      <button class="btn btn-outline btn-lg px-8">
+        <i class="fas fa-play-circle mr-2"></i>
+        Watch Demo
+      </button>
+    </div>
+    
+    <!-- Quick Stats Preview -->
+    <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl w-full">
+      <div class="stat bg-base-100/50 backdrop-blur-sm rounded-box p-4 shadow">
+        <div class="stat-title text-sm">IPOs Tracked</div>
+        <div class="stat-value text-2xl font-bold">1,250+</div>
+      </div>
+      <div class="stat bg-base-100/50 backdrop-blur-sm rounded-box p-4 shadow">
+        <div class="stat-title text-sm">Avg. Return</div>
+        <div class="stat-value text-2xl font-bold text-success">15.2%</div>
+      </div>
+      <div class="stat bg-base-100/50 backdrop-blur-sm rounded-box p-4 shadow">
+        <div class="stat-title text-sm">Active Users</div>
+        <div class="stat-value text-2xl font-bold">25.4K</div>
+      </div>
+      <div class="stat bg-base-100/50 backdrop-blur-sm rounded-box p-4 shadow">
+        <div class="stat-title text-sm">Success Rate</div>
+        <div class="stat-value text-2xl font-bold text-primary">89%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 px-4 md:px-6 bg-base-100">
+    <div class="max-w-7xl mx-auto text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Powerful Features</h2>
+      <p class="text-lg text-base-content/70 max-w-3xl mx-auto">Everything you need to make informed IPO investment decisions</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      <div class="card bg-base-100 p-6 text-center shadow-lg hover:shadow-2xl transition-all rounded-2xl border border-base-200">
+        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-search-dollar text-2xl text-primary"></i>
+        </div>
+        <h3 class="font-bold text-xl mb-3">IPO Tracking</h3>
+        <p class="text-base-content/70 mb-5">Monitor upcoming and recent IPOs with detailed analytics and alerts.</p>
+        <button class="btn btn-primary btn-sm rounded-full">Explore</button>
+      </div>
+      <div class="card bg-base-100 p-6 text-center shadow-lg hover:shadow-2xl transition-all rounded-2xl border border-base-200">
+        <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-brain text-2xl text-secondary"></i>
+        </div>
+        <h3 class="font-bold text-xl mb-3">Smart Analysis</h3>
+        <p class="text-base-content/70 mb-5">AI-powered market trends, risk assessment, and future projections.</p>
+        <button class="btn btn-secondary btn-sm rounded-full">Analyze</button>
+      </div>
+      <div class="card bg-base-100 p-6 text-center shadow-lg hover:shadow-2xl transition-all rounded-2xl border border-base-200">
+        <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-user-tie text-2xl text-accent"></i>
+        </div>
+        <h3 class="font-bold text-xl mb-3">Expert Insights</h3>
+        <p class="text-base-content/70 mb-5">Professional recommendations from industry experts.</p>
+        <button class="btn btn-accent btn-sm rounded-full">Discover</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section id="stats" class="py-20 px-4 md:px-6 bg-gradient-to-r from-primary/5 to-secondary/5">
+    <div class="max-w-7xl mx-auto text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Platform Statistics</h2>
+      <p class="text-lg text-base-content/70 max-w-3xl mx-auto">Trusted by investors worldwide for accurate IPO analysis</p>
+    </div>
+    <div class="flex flex-wrap justify-center gap-6 md:gap-8 max-w-7xl mx-auto">
+      <div class="stat bg-base-100 p-6 shadow-lg rounded-2xl w-60 text-center">
+        <div class="stat-figure text-primary">
+          <i class="fas fa-chart-bar text-3xl"></i>
+        </div>
+        <div class="stat-title text-base">IPOs Tracked</div>
+        <div class="stat-value counter text-3xl font-bold" data-target="1250">0</div>
+        <div class="stat-desc">and growing</div>
+      </div>
+      <div class="stat bg-base-100 p-6 shadow-lg rounded-2xl w-60 text-center">
+        <div class="stat-figure text-success">
+          <i class="fas fa-percentage text-3xl"></i>
+        </div>
+        <div class="stat-title text-base">Average Return</div>
+        <div class="stat-value counter text-3xl font-bold text-success" data-target="15.2">0%</div>
+        <div class="stat-desc">above market average</div>
+      </div>
+      <div class="stat bg-base-100 p-6 shadow-lg rounded-2xl w-60 text-center">
+        <div class="stat-figure text-secondary">
+          <i class="fas fa-users text-3xl"></i>
+        </div>
+        <div class="stat-title text-base">Active Users</div>
+        <div class="stat-value counter text-3xl font-bold" data-target="25400">0</div>
+        <div class="stat-desc">investors worldwide</div>
+      </div>
+      <div class="stat bg-base-100 p-6 shadow-lg rounded-2xl w-60 text-center">
+        <div class="stat-figure text-primary">
+          <i class="fas fa-trophy text-3xl"></i>
+        </div>
+        <div class="stat-title text-base">Success Rate</div>
+        <div class="stat-value counter text-3xl font-bold text-primary" data-target="89">0%</div>
+        <div class="stat-desc">recommendation accuracy</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IPO Sections -->
+  <section id="upcoming" class="py-20 px-4 md:px-6 max-w-7xl mx-auto">
+    <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center">IPO Dashboard</h2>
+    <p class="text-lg text-base-content/70 text-center mb-12 max-w-3xl mx-auto">Comprehensive tracking of upcoming, ongoing, and past IPOs</p>
+    
+    <!-- Tabs for IPO categories -->
+    <div class="tabs tabs-boxed bg-base-200/50 mb-8 max-w-2xl mx-auto">
+      <a class="tab tab-active" data-tab="upcoming">Upcoming</a>
+      <a class="tab" data-tab="ongoing">Ongoing</a>
+      <a class="tab" data-tab="past">Past Performance</a>
+    </div>
+    
+    <!-- Upcoming IPOs -->
+    <div class="tab-content" id="upcoming-tab">
+      <h3 class="text-2xl font-bold mb-6 text-center">Upcoming IPOs</h3>
+      {% if upcoming_ipos %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for ipo in upcoming_ipos %}
+          <div class="card bg-base-100 p-6 shadow-lg hover:shadow-2xl transition-all rounded-2xl border border-base-200">
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="font-bold text-xl">{{ ipo.name }}</h3>
+              <span class="badge badge-primary badge-outline">Upcoming</span>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-base-content/70">Opening Date:</span>
+                <span>{{ ipo.open }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-base-content/70">Closing Date:</span>
+                <span>{{ ipo.close }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-base-content/70">Price Band:</span>
+                <span class="font-semibold">{{ ipo.price_band }}</span>
+              </div>
+            </div>
+            <div class="card-actions justify-end mt-6">
+              <button class="btn btn-primary btn-sm rounded-full">
+                <i class="fas fa-bell mr-1"></i>
+                Notify Me
+              </button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-12">
+          <i class="fas fa-calendar-alt text-5xl text-base-content/20 mb-4"></i>
+          <p class="text-lg text-base-content/60">No upcoming IPOs at the moment</p>
+        </div>
+      {% endif %}
+    </div>
+    
+    <!-- Ongoing IPOs -->
+    <div class="tab-content hidden" id="ongoing-tab">
+      <h3 class="text-2xl font-bold mb-6 text-center">Ongoing IPOs</h3>
+      {% if ongoing_ipos %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for ipo in ongoing_ipos %}
+          <div class="card bg-base-100 p-6 shadow-lg hover:shadow-2xl transition-all rounded-2xl border border-base-200">
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="font-bold text-xl">{{ ipo.name }}</h3>
+              <span class="badge badge-secondary badge-outline">Live</span>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-base-content/70">Closing Date:</span>
+                <span>{{ ipo.close }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-base-content/70">Price Band:</span>
+                <span class="font-semibold">{{ ipo.price_band }}</span>
+              </div>
+            </div>
+            <div class="card-actions justify-end mt-6">
+              <button class="btn btn-secondary btn-sm rounded-full">
+                <i class="fas fa-chart-line mr-1"></i>
+                View Details
+              </button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-12">
+          <i class="fas fa-sync-alt text-5xl text-base-content/20 mb-4"></i>
+          <p class="text-lg text-base-content/60">No ongoing IPOs at the moment</p>
+        </div>
+      {% endif %}
+    </div>
+    
+    <!-- Past IPOs -->
+    <div class="tab-content hidden" id="past-tab">
+      <h3 class="text-2xl font-bold mb-6 text-center">Past IPO Performance</h3>
+      {% if past_ipos %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for ipo in past_ipos %}
+          <div class="card bg-base-100 p-6 shadow-lg hover:shadow-2xl transition-all rounded-2xl border border-base-200">
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="font-bold text-xl">{{ ipo.name }}</h3>
+              <span class="badge badge-accent badge-outline">Completed</span>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-base-content/70">Closing Date:</span>
+                <span>{{ ipo.close }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-base-content/70">Listed Price:</span>
+                <span class="font-semibold">{{ ipo.listed }}</span>
+              </div>
+            </div>
+            <div class="card-actions justify-end mt-6">
+              <button class="btn btn-accent btn-sm rounded-full">
+                <i class="fas fa-history mr-1"></i>
+                History
+              </button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-12">
+          <i class="fas fa-history text-5xl text-base-content/20 mb-4"></i>
+          <p class="text-lg text-base-content/60">No past IPO data available</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- AI Assistant Section -->
+  <section id="ai-assistant" class="py-20 px-4 md:px-6 bg-gradient-to-r from-secondary/10 to-accent/10">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="w-20 h-20 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-robot text-4xl text-secondary"></i>
+      </div>
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Nexa AI Assistant</h2>
+      <p class="text-lg text-base-content/70 mb-8 max-w-2xl mx-auto">Get instant answers to your IPO questions with our AI-powered assistant</p>
+      
+      <div class="card bg-base-100 rounded-2xl shadow-xl p-6 max-w-2xl mx-auto">
+        <div class="chat chat-start mb-4">
+          <div class="chat-image avatar">
+            <div class="w-10 rounded-full bg-secondary/10 flex items-center justify-center">
+              <i class="fas fa-robot text-secondary"></i>
+            </div>
+          </div>
+          <div class="chat-header mb-1">
+            Nexa AI
+          </div>
+          <div class="chat-bubble bg-secondary/10 text-base-content">
+            Hello! I'm your IPO assistant. Ask me anything about upcoming IPOs, market trends, or investment strategies.
+          </div>
+        </div>
+        <div class="form-control">
+          <div class="input-group">
+            <input type="text" placeholder="Ask about IPOs, market trends, or investment strategies..." class="input input-bordered w-full rounded-full" />
+            <button class="btn btn-primary rounded-full">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer footer-center p-10 bg-base-200 text-base-content rounded">
+    <div class="grid grid-flow-col gap-4">
+      <a class="link link-hover">About us</a>
+      <a class="link link-hover">Contact</a>
+      <a class="link link-hover">Jobs</a>
+      <a class="link link-hover">Press kit</a>
+    </div>
+    <div>
+      <div class="grid grid-flow-col gap-4">
+        <a><i class="fab fa-twitter text-2xl"></i></a>
+        <a><i class="fab fa-linkedin text-2xl"></i></a>
+        <a><i class="fab fa-facebook text-2xl"></i></a>
+        <a><i class="fab fa-github text-2xl"></i></a>
+      </div>
+    </div>
+    <div>
+      <p>Copyright © 2025 - All right reserved by IPO Compass Ltd</p>
+    </div>
+  </footer>
+
+  <!-- Custom Styles -->
+  <style>
+    .tab-content {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .hero {
+      background: radial-gradient(circle at top right, hsl(var(--p)/0.1) 0%, transparent 25%),
+                  radial-gradient(circle at bottom left, hsl(var(--s)/0.1) 0%, transparent 25%);
+    }
+  </style>
+  
+  <!-- Tab Switching Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Tab switching functionality
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs and contents
+          tabs.forEach(t => t.classList.remove('tab-active'));
+          tabContents.forEach(tc => tc.classList.add('hidden'));
+          
+          // Add active class to clicked tab
+          tab.classList.add('tab-active');
+          
+          // Show corresponding content
+          const tabName = tab.getAttribute('data-tab');
+          document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+        });
+      });
+      
+      // Update theme toggle icon based on current theme
+      const themeToggle = document.getElementById('themeToggle');
+      const updateThemeIcon = () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        themeToggle.innerHTML = currentTheme === 'dark' ? 
+          '<i class="fas fa-sun"></i>' : 
+          '<i class="fas fa-moon"></i>';
+      };
+      
+      // Update icon on initial load
+      updateThemeIcon();
+      
+      // Update icon when theme changes
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          setTimeout(updateThemeIcon, 100);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
