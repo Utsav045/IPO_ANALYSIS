@@ -1,0 +1,402 @@
+{% extends 'ipo_app/base.html' %}
+{% load static %}
+
+{% block title %}Market Analysis - IPO Compass{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <h2 class="mb-3">
+                    <i class="fas fa-chart-bar me-2"></i>Market Analysis
+                </h2>
+                <p class="lead">Comprehensive IPO market insights and trends</p>
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="d-flex flex-column">
+                            <span class="h3 mb-0">{{ total_ipos }}</span>
+                            <small>Total IPOs</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex flex-column">
+                            <span class="h3 mb-0">{{ avg_listing_gains|floatformat:1 }}%</span>
+                            <small>Avg Listing Gains</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex flex-column">
+                            <span class="h3 mb-0">{{ monthly_data|length }}</span>
+                            <small>Months Tracked</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex flex-column">
+                            <span class="h3 mb-0">{{ industry_data|length }}</span>
+                            <small>Industries</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- Monthly IPO Trend -->
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-line-chart me-2"></i>Monthly IPO Trend
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyTrendChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Industry Distribution -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-pie-chart me-2"></i>Industry Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="industryChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Analysis -->
+<div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-scatter me-2"></i>Subscription vs Listing Gains
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="subscriptionChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Insights -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Market Insights
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h6 class="text-primary">Key Findings</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-arrow-up text-success me-2"></i>
+                            {% if avg_listing_gains > 0 %}
+                                Average listing gains are positive at {{ avg_listing_gains|floatformat:1 }}%
+                            {% else %}
+                                Market showing cautious sentiment
+                            {% endif %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-industry text-info me-2"></i>
+                            {% if industry_data %}
+                                {{ industry_data.0.industry }} sector leading with {{ industry_data.0.count }} IPOs
+                            {% else %}
+                                Diverse industry representation
+                            {% endif %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-calendar text-warning me-2"></i>
+                            Monthly IPO activity showing market momentum
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-primary">Investment Recommendations</h6>
+                    <div class="alert alert-info">
+                        <small>
+                            <i class="fas fa-info-circle me-1"></i>
+                            Based on current market trends, consider diversifying across multiple sectors 
+                            and evaluate each IPO's fundamentals before investing.
+                        </small>
+                    </div>
+                </div>
+
+                <div>
+                    <h6 class="text-primary">Quick Actions</h6>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'ai_chat' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-robot me-1"></i>Get AI Analysis
+                        </a>
+                        <a href="{% url 'risk_assessment' %}" class="btn btn-outline-success">
+                            <i class="fas fa-shield-alt me-1"></i>Assess Your Risk
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Industry Performance Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-table me-2"></i>Industry Performance Breakdown
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if industry_data %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Industry</th>
+                                    <th>Number of IPOs</th>
+                                    <th>Market Share</th>
+                                    <th>Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for industry in industry_data %}
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-industry text-primary me-2"></i>
+                                            {{ industry.industry }}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ industry.count }}</span>
+                                        </td>
+                                        <td>
+                                            {% widthratio industry.count total_ipos 100 as percentage %}
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     style="width: {{ percentage }}%">
+                                                    {{ percentage }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if forloop.counter <= 3 %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-arrow-up me-1"></i>Hot
+                                                </span>
+                                            {% elif forloop.counter <= 6 %}
+                                                <span class="badge bg-warning">
+                                                    <i class="fas fa-minus me-1"></i>Stable
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-arrow-down me-1"></i>Emerging
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No industry data available</p>
+                        <button class="btn btn-primary" onclick="syncIPOData()">
+                            <i class="fas fa-sync-alt me-1"></i>Sync Data
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart.js configurations
+        Chart.defaults.font.family = 'Inter, system-ui, -apple-system, sans-serif';
+        Chart.defaults.color = '#6c757d';
+
+        // Monthly Trend Chart
+        const monthlyCtx = document.getElementById('monthlyTrendChart');
+        if (monthlyCtx) {
+            const monthlyData = {{ monthly_data|safe }};
+            
+            new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: monthlyData.map(item => item.month),
+                    datasets: [{
+                        label: 'IPO Count',
+                        data: monthlyData.map(item => item.count),
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#3498db',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Number of IPOs'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Industry Distribution Chart
+        const industryCtx = document.getElementById('industryChart');
+        if (industryCtx) {
+            const industryData = {{ industry_data|safe }};
+            const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#34495e', '#e67e22', '#95a5a6', '#f1c40f'];
+            
+            new Chart(industryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: industryData.slice(0, 8).map(item => item.industry),
+                    datasets: [{
+                        data: industryData.slice(0, 8).map(item => item.count),
+                        backgroundColor: colors.slice(0, 8),
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Subscription vs Listing Gains Chart
+        const subscriptionCtx = document.getElementById('subscriptionChart');
+        if (subscriptionCtx) {
+            const subscriptionData = {{ subscription_data|safe }};
+            
+            new Chart(subscriptionCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'IPOs',
+                        data: subscriptionData.map(item => ({
+                            x: item.subscription_rate || 0,
+                            y: item.listing_gains || 0
+                        })),
+                        backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                        borderColor: '#3498db',
+                        borderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const dataIndex = context.dataIndex;
+                                    if (subscriptionData[dataIndex]) {
+                                        return subscriptionData[dataIndex].company__name;
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Subscription Rate (x)'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Listing Gains (%)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Auto-refresh indicator
+        setInterval(function() {
+            if (document.visibilityState === 'visible') {
+                console.log('Charts are active and ready for updates');
+            }
+        }, 300000);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,410 @@
+{% extends 'ipo_app/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - IPO Compass{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hover-lift {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    }
+    
+    .stats-item {
+        padding: 1rem;
+        border-radius: 0.75rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .ipo-item {
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .ipo-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .feature-icon {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card stats-card border-0">
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-chart-line" style="font-size: 4rem; background: linear-gradient(45deg, #fff, #e3f2fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                </div>
+                <h1 class="display-5 fw-bold mb-3">IPO Compass Dashboard</h1>
+                <p class="lead opacity-90 mb-4">Your intelligent companion for IPO analysis and investment decisions</p>
+                
+                <div class="row g-4 mt-3">
+                    <div class="col-6 col-md-3">
+                        <div class="stats-item">
+                            <div class="h2 fw-bold mb-1">{{ total_ipos }}</div>
+                            <div class="small opacity-75">Total IPOs</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stats-item">
+                            <div class="h2 fw-bold mb-1">{{ active_ipos }}</div>
+                            <div class="small opacity-75">Active IPOs</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stats-item">
+                            <div class="h2 fw-bold mb-1">{{ completed_ipos }}</div>
+                            <div class="small opacity-75">Completed</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stats-item">
+                            <div class="h2 fw-bold mb-1">{{ avg_subscription }}x</div>
+                            <div class="small opacity-75">Avg Subscription</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-4 mb-5">
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon mx-auto mb-3">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h5 class="card-title mb-3">AI Assistant</h5>
+                <p class="card-text text-muted mb-4">Get instant IPO insights and analysis with our AI-powered assistant</p>
+                <a href="{% url 'ai_chat' %}" class="btn btn-primary btn-sm px-4">
+                    <i class="fas fa-comments me-2"></i>Start Chat
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon mx-auto mb-3">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h5 class="card-title mb-3">Market Analysis</h5>
+                <p class="card-text text-muted mb-4">Explore comprehensive market trends and performance metrics</p>
+                <a href="{% url 'market_analysis' %}" class="btn btn-primary btn-sm px-4">
+                    <i class="fas fa-analytics me-2"></i>View Analysis
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon mx-auto mb-3">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h5 class="card-title mb-3">Risk Assessment</h5>
+                <p class="card-text text-muted mb-4">Calculate and analyze your investment risk profile</p>
+                <a href="{% url 'risk_assessment' %}" class="btn btn-primary btn-sm px-4">
+                    <i class="fas fa-calculator me-2"></i>Assess Risk
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon mx-auto mb-3">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h5 class="card-title mb-3">Portfolio</h5>
+                <p class="card-text text-muted mb-4">Track and manage your IPO investments portfolio</p>
+                <a href="{% url 'portfolio' %}" class="btn btn-primary btn-sm px-4">
+                    <i class="fas fa-eye me-2"></i>View Portfolio
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- IPO Sections -->
+<div class="row g-4 mb-5">
+    <!-- Upcoming IPOs -->
+    <div class="col-lg-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-header bg-transparent border-bottom-0 d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 fw-semibold">
+                    <i class="fas fa-clock me-2 ipo-status-upcoming"></i>Upcoming IPOs
+                </h5>
+                <a href="{% url 'ipo_list' %}?status=upcoming" class="btn btn-sm btn-outline-primary">
+                    View All <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                {% if upcoming_ipos %}
+                    {% for ipo in upcoming_ipos %}
+                        <div class="ipo-item p-3 rounded-3 mb-3 border" style="background-color: rgba(59, 130, 246, 0.02);">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h6 class="mb-1 fw-semibold">
+                                        <a href="{% url 'ipo_detail' ipo.id %}" class="text-decoration-none text-dark">
+                                            {{ ipo.company.name }}
+                                        </a>
+                                    </h6>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-light text-dark me-2">{{ ipo.company.symbol }}</span>
+                                        <small class="text-muted">{{ ipo.company.industry }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <div class="fw-bold text-primary mb-1">₹{{ ipo.price_band_min }} - ₹{{ ipo.price_band_max }}</div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>{{ ipo.open_date|date:'d M Y' }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-times text-muted mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+                        <h6 class="text-muted mb-3">No upcoming IPOs found</h6>
+                        <button class="btn btn-outline-primary btn-sm" onclick="syncIPOData()">
+                            <i class="fas fa-sync-alt me-2"></i>Sync Data
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Ongoing IPOs -->
+    <div class="col-lg-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-header bg-transparent border-bottom-0 d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 fw-semibold">
+                    <i class="fas fa-play-circle me-2 ipo-status-ongoing"></i>Ongoing IPOs
+                </h5>
+                <a href="{% url 'ipo_list' %}?status=ongoing" class="btn btn-sm btn-outline-warning">
+                    View All <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                {% if ongoing_ipos %}
+                    {% for ipo in ongoing_ipos %}
+                        <div class="ipo-item p-3 rounded-3 mb-3 border" style="background-color: rgba(245, 158, 11, 0.02);">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h6 class="mb-1 fw-semibold">
+                                        <a href="{% url 'ipo_detail' ipo.id %}" class="text-decoration-none text-dark">
+                                            {{ ipo.company.name }}
+                                        </a>
+                                    </h6>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-warning bg-opacity-25 text-warning me-2">
+                                            <i class="fas fa-clock me-1"></i>Closes: {{ ipo.close_date|date:'d M Y' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <div class="fw-bold text-warning mb-1">₹{{ ipo.price_band_min }} - ₹{{ ipo.price_band_max }}</div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-hourglass-half me-1"></i>{{ ipo.days_to_close }} days left
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-play-circle text-muted mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+                        <h6 class="text-muted mb-3">No ongoing IPOs found</h6>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Completions -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-check-circle me-2 ipo-status-completed"></i>Recently Completed
+                </h5>
+                <a href="{% url 'ipo_list' %}?status=completed" class="btn btn-sm btn-outline-success">View All</a>
+            </div>
+            <div class="card-body">
+                {% if past_ipos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Listing Price</th>
+                                    <th>Listing Gains</th>
+                                    <th>Subscription</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ipo in past_ipos %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'ipo_detail' ipo.id %}" class="text-decoration-none">
+                                                <strong>{{ ipo.company.name }}</strong><br>
+                                                <small class="text-muted">{{ ipo.company.symbol }}</small>
+                                            </a>
+                                        </td>
+                                        <td>₹{{ ipo.final_price|default:"TBD" }}</td>
+                                        <td>
+                                            {% if ipo.listing_gains %}
+                                                <span class="badge bg-{% if ipo.listing_gains >= 0 %}success{% else %}danger{% endif %}">
+                                                    {% if ipo.listing_gains >= 0 %}+{% endif %}{{ ipo.listing_gains }}%
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">TBD</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if ipo.subscription_rate %}
+                                                {{ ipo.subscription_rate }}x
+                                            {% else %}
+                                                <span class="text-muted">TBD</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No completed IPOs found</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent News -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-newspaper me-2"></i>Latest News
+                </h5>
+                <a href="{% url 'news' %}" class="btn btn-sm btn-outline-info">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_news %}
+                    {% for news_item in recent_news %}
+                        <div class="border-bottom pb-2 mb-2">
+                            <h6 class="mb-1">
+                                <a href="#" class="text-decoration-none">{{ news_item.title|truncatewords:8 }}</a>
+                            </h6>
+                            <small class="text-muted">
+                                {{ news_item.ipo.company.name }} | {{ news_item.published_date|date:'d M Y' }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No recent news found</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>System Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-robot me-2 text-{% if finnhub_configured %}success{% else %}warning{% endif %}"></i>
+                            <span>Finnhub API: 
+                                <span class="badge bg-{% if finnhub_configured %}success{% else %}warning{% endif %}">
+                                    {% if finnhub_configured %}Connected{% else %}Not Configured{% endif %}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-brain me-2 text-success"></i>
+                            <span>AI Assistant: <span class="badge bg-success">Active</span></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-database me-2 text-success"></i>
+                            <span>Database: <span class="badge bg-success">{{ total_companies }} Companies</span></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-clock me-2 text-info"></i>
+                            <span>Last Update: <span class="badge bg-info">{{ 'now'|date:'H:i' }}</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Dashboard specific JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-refresh data every 5 minutes
+        setInterval(function() {
+            if (document.visibilityState === 'visible') {
+                location.reload();
+            }
+        }, 300000); // 5 minutes
+        
+        // Add smooth scroll to feature cards
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transition = 'transform 0.2s ease-in-out';
+            });
+        });
+    });
+</script>
+{% endblock %}

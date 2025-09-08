@@ -1,0 +1,283 @@
+{% extends 'ipo_app/base.html' %}
+{% load static %}
+
+{% block title %}IPO List - IPO Compass{% endblock %}
+
+{% block content %}
+<!-- Header and Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        <i class="fas fa-list me-2"></i>All IPOs
+                    </h3>
+                    <button class="btn btn-primary" onclick="syncIPOData()">
+                        <i class="fas fa-sync-alt me-1"></i>Sync Data
+                    </button>
+                </div>
+                
+                <!-- Filters -->
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               value="{{ search_query }}" placeholder="Company name or symbol">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">All Status</option>
+                            {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="exchange" class="form-label">Exchange</label>
+                        <select class="form-select" id="exchange" name="exchange">
+                            <option value="">All Exchanges</option>
+                            {% for value, label in exchange_choices %}
+                                <option value="{{ value }}" {% if exchange_filter == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="fas fa-filter me-1"></i>Filter
+                            </button>
+                            <a href="{% url 'ipo_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Clear
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- IPO Cards -->
+<div class="row">
+    {% if ipos %}
+        {% for ipo in ipos %}
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">
+                                <a href="{% url 'ipo_detail' ipo.id %}" class="text-decoration-none">
+                                    {{ ipo.company.name }}
+                                </a>
+                            </h5>
+                            <small class="text-muted">{{ ipo.company.symbol }} | {{ ipo.company.industry }}</small>
+                        </div>
+                        <span class="badge bg-{% if ipo.status == 'upcoming' %}primary{% elif ipo.status == 'ongoing' %}warning{% elif ipo.status == 'completed' %}success{% else %}secondary{% endif %} fs-6">
+                            {% if ipo.status == 'upcoming' %}
+                                <i class="fas fa-clock me-1"></i>
+                            {% elif ipo.status == 'ongoing' %}
+                                <i class="fas fa-play-circle me-1"></i>
+                            {% elif ipo.status == 'completed' %}
+                                <i class="fas fa-check-circle me-1"></i>
+                            {% endif %}
+                            {{ ipo.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <h6 class="text-primary mb-1">Price Band</h6>
+                                    <div class="fw-bold fs-5">₹{{ ipo.price_band_min }} - ₹{{ ipo.price_band_max }}</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6 class="text-muted mb-1">Issue Size</h6>
+                                    <div>₹{{ ipo.issue_size }} Crores</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6 class="text-muted mb-1">Exchange</h6>
+                                    <div>{{ ipo.get_exchange_display }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <h6 class="text-muted mb-1">
+                                        {% if ipo.status == 'upcoming' %}
+                                            Opens On
+                                        {% elif ipo.status == 'ongoing' %}
+                                            Closes On
+                                        {% else %}
+                                            Closed On
+                                        {% endif %}
+                                    </h6>
+                                    <div>
+                                        {% if ipo.status == 'upcoming' %}
+                                            {{ ipo.open_date|date:"d M Y" }}
+                                        {% else %}
+                                            {{ ipo.close_date|date:"d M Y" }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% if ipo.subscription_rate %}
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-1">Subscription</h6>
+                                        <div class="fw-bold">{{ ipo.subscription_rate }}x</div>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if ipo.listing_gains %}
+                                    <div class="mb-3">
+                                        <h6 class="text-muted mb-1">Listing Gains</h6>
+                                        <div class="fw-bold text-{% if ipo.listing_gains >= 0 %}success{% else %}danger{% endif %}">
+                                            {% if ipo.listing_gains >= 0 %}+{% endif %}{{ ipo.listing_gains }}%
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if ipo.status == 'ongoing' and ipo.days_to_close %}
+                                    <div class="mb-3">
+                                        <h6 class="text-warning mb-1">Days Left</h6>
+                                        <div class="fw-bold">{{ ipo.days_to_close }} days</div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Company Description -->
+                        <div class="mt-3">
+                            <p class="text-muted small">{{ ipo.company.description|truncatewords:20 }}</p>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 mt-3">
+                            <a href="{% url 'ipo_detail' ipo.id %}" class="btn btn-primary">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                            {% if ipo.status == 'upcoming' or ipo.status == 'ongoing' %}
+                                <button class="btn btn-outline-info" onclick="analyzeIPO('{{ ipo.company.name }}')">
+                                    <i class="fas fa-robot me-1"></i>AI Analysis
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <!-- No IPOs Found -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No IPOs Found</h4>
+                    <p class="text-muted">Try adjusting your filters or sync new data</p>
+                    <div class="mt-3">
+                        <button class="btn btn-primary me-2" onclick="syncIPOData()">
+                            <i class="fas fa-sync-alt me-1"></i>Sync Data
+                        </button>
+                        <a href="{% url 'ipo_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Clear Filters
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Statistics Summary -->
+{% if ipos %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="text-muted mb-3">Summary</h6>
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="fw-bold text-primary fs-4">{{ ipos|length }}</div>
+                        <small class="text-muted">Total Results</small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="fw-bold text-info fs-4">
+                            {{ ipos|dictsort:"status"|dictsort:"upcoming"|length }}
+                        </div>
+                        <small class="text-muted">Upcoming</small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="fw-bold text-warning fs-4">
+                            {{ ipos|dictsort:"status"|dictsort:"ongoing"|length }}
+                        </div>
+                        <small class="text-muted">Ongoing</small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="fw-bold text-success fs-4">
+                            {{ ipos|dictsort:"status"|dictsort:"completed"|length }}
+                        </div>
+                        <small class="text-muted">Completed</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // IPO List specific JavaScript
+    function analyzeIPO(companyName) {
+        // Redirect to AI chat with pre-filled question
+        const question = `Tell me about ${companyName} IPO. Should I invest?`;
+        window.open(`/ai-chat/?q=${encodeURIComponent(question)}`, '_blank');
+    }
+    
+    // Auto-submit form on filter change
+    document.addEventListener('DOMContentLoaded', function() {
+        const filters = document.querySelectorAll('#status, #exchange');
+        filters.forEach(filter => {
+            filter.addEventListener('change', function() {
+                this.form.submit();
+            });
+        });
+        
+        // Add smooth animations
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.classList.add('fade-in');
+        });
+    });
+    
+    // Add CSS for animations
+    const style = document.createElement('style');
+    style.textContent = `
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

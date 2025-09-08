@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IPO Compass - Intelligent IPO Analysis{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #1a1d29;
+            --secondary-color: #6366f1;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-success: linear-gradient(135deg, #667eea 0%, #10b981 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        /* Navigation Styles */
+        .navbar {
+            background: var(--card-bg) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand i {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-right: 0.5rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-secondary) !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            margin: 0 0.2rem;
+        }
+        
+        .nav-link:hover {
+            color: var(--secondary-color) !important;
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+        
+        .nav-link.active {
+            background: var(--gradient-primary) !important;
+            color: white !important;
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Card Styles */
+        .card {
+            border: none;
+            background: var(--card-bg);
+            border-radius: 1rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .card-header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* Status Colors */
+        .ipo-status-upcoming {
+            color: var(--info-color);
+        }
+        
+        .ipo-status-ongoing {
+            color: var(--warning-color);
+        }
+        
+        .ipo-status-completed {
+            color: var(--success-color);
+        }
+        
+        /* Stats Cards */
+        .stats-card {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stats-card .card-body {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="80" r="2" fill="white" opacity="0.1"/><circle cx="40" cy="60" r="1" fill="white" opacity="0.1"/></svg>');
+            pointer-events: none;
+        }
+        
+        /* Feature Icons */
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 4rem;
+            height: 4rem;
+            border-radius: 1rem;
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Buttons */
+        .btn {
+            font-weight: 500;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            background: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Tables */
+        .table {
+            background: var(--card-bg);
+        }
+        
+        .table th {
+            border-top: none;
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-primary);
+            padding: 1rem;
+        }
+        
+        .table td {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+        
+        /* Badges */
+        .badge {
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+        }
+        
+        /* Chat Styles */
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            background: var(--light-bg);
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 1rem;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            background: var(--gradient-primary);
+            color: white;
+            margin-left: auto;
+            margin-right: 0;
+        }
+        
+        .bot-message {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            margin-right: auto;
+            margin-left: 0;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            margin-top: 4rem;
+            padding: 2rem 0;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease;
+        }
+        
+        /* Loading States */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--light-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 1rem;
+            }
+            
+            .feature-icon {
+                font-size: 2rem;
+                width: 3rem;
+                height: 3rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'dashboard' %}">
+                <i class="fas fa-chart-line me-2"></i>IPO Compass
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                           href="{% url 'dashboard' %}">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'ipo_list' %}active{% endif %}" 
+                           href="{% url 'ipo_list' %}">
+                            <i class="fas fa-list me-1"></i>IPO List
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'ai_chat' %}active{% endif %}" 
+                           href="{% url 'ai_chat' %}">
+                            <i class="fas fa-robot me-1"></i>AI Assistant
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'market_analysis' %}active{% endif %}" 
+                           href="{% url 'market_analysis' %}">
+                            <i class="fas fa-chart-bar me-1"></i>Market Analysis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'risk_assessment' %}active{% endif %}" 
+                           href="{% url 'risk_assessment' %}">
+                            <i class="fas fa-shield-alt me-1"></i>Risk Assessment
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'portfolio' %}active{% endif %}" 
+                           href="{% url 'portfolio' %}">
+                            <i class="fas fa-briefcase me-1"></i>Portfolio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'news' %}active{% endif %}" 
+                           href="{% url 'news' %}">
+                            <i class="fas fa-newspaper me-1"></i>News
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-2">
+                        <a class="nav-link d-flex align-items-center" href="/admin/" target="_blank">
+                            <i class="fas fa-cog me-1"></i>
+                            <span class="d-none d-md-inline">Admin</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="syncIPOData()">
+                            <i class="fas fa-sync-alt me-1"></i>
+                            <span class="d-none d-md-inline">Sync Data</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="container-fluid px-4 py-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show fade-in" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <div class="fade-in">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-3 mb-md-0">
+                        <i class="fas fa-chart-line me-3" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5 class="mb-1">IPO Compass</h5>
+                            <p class="mb-0 opacity-75">Intelligent IPO Analysis & Investment Insights</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex flex-wrap justify-content-md-end gap-2">
+                        <span class="badge bg-light text-dark d-flex align-items-center px-3 py-2">
+                            <i class="fas fa-robot me-2"></i>AI Powered
+                        </span>
+                        <span class="badge bg-light text-dark d-flex align-items-center px-3 py-2">
+                            <i class="fas fa-chart-bar me-2"></i>Real-time Data
+                        </span>
+                        <span class="badge bg-light text-dark d-flex align-items-center px-3 py-2">
+                            <i class="fas fa-shield-alt me-2"></i>Risk Analysis
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 opacity-25">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0 opacity-75">&copy; 2024 IPO Compass. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Global JavaScript -->
+    <script>
+        // Smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+        
+        // Add loading animation to page transitions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add fade-in class to main content
+            const mainContent = document.querySelector('main');
+            if (mainContent) {
+                mainContent.classList.add('fade-in');
+            }
+            
+            // Add hover effects to cards
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+        
+        // Global utility functions
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container') || createToastContainer();
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-bg-${type} border-0 fade-in`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-info-circle me-2"></i>${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            
+            const bsToast = new bootstrap.Toast(toast, {
+                autohide: true,
+                delay: 5000
+            });
+            bsToast.show();
+            
+            // Remove toast after it's hidden
+            toast.addEventListener('hidden.bs.toast', () => toast.remove());
+        }
+        
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            container.style.zIndex = '9999';
+            document.body.appendChild(container);
+            return container;
+        }
+        
+        // Enhanced Sync IPO Data function with better UX
+        async function syncIPOData() {
+            const button = event.target.closest('button');
+            const originalText = button.innerHTML;
+            const originalDisabled = button.disabled;
+            
+            // Show loading state
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Syncing...';
+            button.disabled = true;
+            button.classList.add('loading');
+            
+            try {
+                showToast('Starting data synchronization...', 'info');
+                
+                const response = await fetch('/api/sync-ipo-data/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(),
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showToast('IPO data synced successfully! Refreshing page...', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showToast(data.message || 'Sync failed. Please try again.', 'danger');
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                showToast('Error syncing data: ' + error.message, 'danger');
+            } finally {
+                // Restore button state if not reloading
+                setTimeout(() => {
+                    if (button) {
+                        button.innerHTML = originalText;
+                        button.disabled = originalDisabled;
+                        button.classList.remove('loading');
+                    }
+                }, 500);
+            }
+        }
+        
+        // Format currency with Indian numbering
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+        
+        // Format percentage with color coding
+        function formatPercentage(value) {
+            const sign = value >= 0 ? '+' : '';
+            const color = value >= 0 ? 'text-success' : 'text-danger';
+            return `<span class="${color}">${sign}${value}%</span>`;
+        }
+        
+        // Get CSRF token safely
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                   document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+        }
+        
+        // Add smooth animations for dynamic content
+        function animateIn(element) {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'all 0.6s ease';
+            
+            setTimeout(() => {
+                element.style.opacity = '1';
+                element.style.transform = 'translateY(0)';
+            }, 50);
+        }
+        
+        // Auto-hide alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

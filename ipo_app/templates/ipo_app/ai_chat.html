@@ -1,0 +1,511 @@
+{% extends 'ipo_app/base.html' %}
+{% load static %}
+
+{% block title %}AI Assistant - IPO Compass{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-interface {
+        height: 70vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+        border-radius: 10px;
+        margin-bottom: 15px;
+        box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .message {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 15px;
+        max-width: 80%;
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .user-message {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        margin-left: auto;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .bot-message {
+        background: white;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        border-bottom-left-radius: 5px;
+    }
+    
+    .message-time {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin-top: 5px;
+    }
+    
+    .typing-indicator {
+        display: none;
+        padding: 15px;
+        background: white;
+        border-radius: 15px;
+        max-width: 80px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .typing-dots {
+        display: flex;
+        gap: 3px;
+    }
+    
+    .typing-dots span {
+        height: 8px;
+        width: 8px;
+        background: #3498db;
+        border-radius: 50%;
+        animation: typing 1.4s infinite ease-in-out;
+    }
+    
+    .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+    
+    @keyframes typing {
+        0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+        40% { transform: scale(1); opacity: 1; }
+    }
+    
+    .chat-input-container {
+        background: white;
+        border-radius: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 10px;
+    }
+    
+    .chat-input {
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        padding: 10px 15px;
+        border-radius: 20px;
+    }
+    
+    .send-button {
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        transition: transform 0.2s;
+    }
+    
+    .send-button:hover {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, #2980b9, #3498db);
+    }
+    
+    .suggestions {
+        margin-bottom: 15px;
+    }
+    
+    .suggestion-chip {
+        display: inline-block;
+        padding: 8px 15px;
+        margin: 5px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+    
+    .suggestion-chip:hover {
+        background: #3498db;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .ai-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #27ae60, #219a52);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-left: 10px;
+        font-size: 1.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- Header -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <div class="ai-avatar d-inline-flex mb-3" style="width: 60px; height: 60px; font-size: 2rem;">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h2>Nexa AI Assistant</h2>
+                <p class="text-muted">Your intelligent companion for IPO analysis and investment insights</p>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-brain me-1"></i>AI-Powered Analysis
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>Real-time Responses
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-chart-line me-1"></i>Market Insights
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Interface -->
+        <div class="card">
+            <div class="card-body">
+                <div class="chat-interface">
+                    <!-- Messages Container -->
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Welcome Message -->
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="ai-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message bot-message">
+                                <div class="fw-bold mb-2">Nexa AI</div>
+                                <p>Hello! I'm Nexa, your AI assistant for IPO analysis. I can help you with:</p>
+                                <ul class="mb-0">
+                                    <li>IPO analysis and recommendations</li>
+                                    <li>Risk assessment and investment strategies</li>
+                                    <li>Market trends and insights</li>
+                                    <li>Company research and financial analysis</li>
+                                </ul>
+                                <div class="message-time">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Typing Indicator -->
+                    <div class="typing-indicator d-flex align-items-start mb-3" id="typingIndicator">
+                        <div class="ai-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Suggestions -->
+                    <div class="suggestions">
+                        <h6 class="text-muted mb-2">Quick Questions:</h6>
+                        <div class="suggestion-chip" onclick="sendSuggestion('What are the upcoming IPOs this month?')">
+                            What are the upcoming IPOs this month?
+                        </div>
+                        <div class="suggestion-chip" onclick="sendSuggestion('How do I evaluate an IPO risk?')">
+                            How do I evaluate an IPO risk?
+                        </div>
+                        <div class="suggestion-chip" onclick="sendSuggestion('What is the average IPO subscription rate?')">
+                            What is the average IPO subscription rate?
+                        </div>
+                        <div class="suggestion-chip" onclick="sendSuggestion('Should I invest in tech IPOs?')">
+                            Should I invest in tech IPOs?
+                        </div>
+                        <div class="suggestion-chip" onclick="sendSuggestion('Explain grey market premium')">
+                            Explain grey market premium
+                        </div>
+                    </div>
+                    
+                    <!-- Input Container -->
+                    <div class="chat-input-container">
+                        <div class="d-flex align-items-center">
+                            <input 
+                                type="text" 
+                                class="form-control chat-input" 
+                                id="messageInput" 
+                                placeholder="Ask me anything about IPOs..."
+                                autocomplete="off"
+                            >
+                            <button class="btn send-button ms-2" onclick="sendMessage()" id="sendButton">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Info -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-lightbulb feature-icon"></i>
+                        <h6>Smart Analysis</h6>
+                        <p class="small text-muted">Get intelligent insights based on real market data</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-shield-alt feature-icon"></i>
+                        <h6>Risk Assessment</h6>
+                        <p class="small text-muted">Understand potential risks and opportunities</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-chart-bar feature-icon"></i>
+                        <h6>Market Trends</h6>
+                        <p class="small text-muted">Stay updated with latest market movements</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let isWaiting = false;
+    
+    // Initialize chat
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageInput = document.getElementById('messageInput');
+        
+        // Enter key to send message
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isWaiting) {
+                sendMessage();
+            }
+        });
+        
+        // Auto-focus input
+        messageInput.focus();
+    });
+    
+    function sendSuggestion(message) {
+        const messageInput = document.getElementById('messageInput');
+        messageInput.value = message;
+        sendMessage();
+        
+        // Hide suggestions
+        document.querySelector('.suggestions').style.display = 'none';
+    }
+    
+    async function sendMessage() {
+        if (isWaiting) return;
+        
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        
+        if (!message) {
+            alert('Please enter a message');
+            return;
+        }
+        
+        // Clear input
+        messageInput.value = '';
+        
+        // Add user message
+        addMessage(message, 'user');
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Set waiting state
+        isWaiting = true;
+        updateSendButton(true);
+        
+        try {
+            // Send request to AI with proper error handling
+            const response = await fetch(`/get-response/?message=${encodeURIComponent(message)}`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCSRFToken(),
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Hide typing indicator
+            hideTypingIndicator();
+            
+            // Add bot response
+            if (data.response) {
+                addMessage(data.response, 'bot');
+            } else {
+                addMessage('I apologize, but I couldn\'t generate a response. Please try again.', 'bot');
+            }
+            
+        } catch (error) {
+            console.error('Chat error:', error);
+            hideTypingIndicator();
+            addMessage(`I'm experiencing some technical difficulties. Here are some quick tips while I recover:
+
+🔍 **IPO Research Tips:**
+• Always read the company prospectus
+• Check the management team's track record  
+• Analyze the company's financial performance
+• Consider market conditions
+
+📊 **Use our tools:** Market Analysis, Risk Assessment, and Portfolio sections for detailed insights!`, 'bot');
+        } finally {
+            isWaiting = false;
+            updateSendButton(false);
+            messageInput.focus();
+        }
+    }
+    
+    function addMessage(content, sender) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        if (sender === 'user') {
+            messageDiv.className = 'd-flex align-items-start mb-3 justify-content-end';
+            messageDiv.innerHTML = `
+                <div class="message user-message">
+                    <div class="fw-bold mb-2">You</div>
+                    <div>${escapeHtml(content)}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            `;
+        } else {
+            messageDiv.className = 'd-flex align-items-start mb-3';
+            messageDiv.innerHTML = `
+                <div class="ai-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message bot-message">
+                    <div class="fw-bold mb-2">Nexa AI</div>
+                    <div>${formatBotMessage(content)}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+        }
+        
+        chatMessages.appendChild(messageDiv);
+        
+        // Add animation
+        messageDiv.style.opacity = '0';
+        messageDiv.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            messageDiv.style.transition = 'all 0.3s ease';
+            messageDiv.style.opacity = '1';
+            messageDiv.style.transform = 'translateY(0)';
+        }, 10);
+        
+        // Scroll to bottom
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 100);
+        
+        // Hide suggestions after first user message
+        if (sender === 'user') {
+            document.querySelector('.suggestions').style.display = 'none';
+        }
+    }
+    
+    function showTypingIndicator() {
+        document.getElementById('typingIndicator').style.display = 'flex';
+        const chatMessages = document.getElementById('chatMessages');
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 100);
+    }
+    
+    function hideTypingIndicator() {
+        document.getElementById('typingIndicator').style.display = 'none';
+    }
+    
+    function updateSendButton(isLoading) {
+        const sendButton = document.getElementById('sendButton');
+        if (isLoading) {
+            sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            sendButton.disabled = true;
+            sendButton.classList.add('loading');
+        } else {
+            sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            sendButton.disabled = false;
+            sendButton.classList.remove('loading');
+        }
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function formatBotMessage(content) {
+        // Enhanced formatting for bot messages
+        return content
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/•/g, '&bull;')
+            .replace(/🔍|📊|💡|⚠️|📈|📉|💼|🏢|⭐|✅|❌|🚀/g, '<span style="font-size: 1.2em;">$&</span>');
+    }
+    
+    // Helper function to get CSRF token
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+               document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+    }
+</script>
+{% endblock %}

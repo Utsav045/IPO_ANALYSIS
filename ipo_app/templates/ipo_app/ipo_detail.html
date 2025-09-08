@@ -1,0 +1,207 @@
+{% extends 'ipo_app/base.html' %}
+
+{% block title %}{{ ipo.company.name }} IPO - IPO Compass{% endblock %}
+
+{% block content %}
+<!-- IPO Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2>{{ ipo.company.name }} IPO</h2>
+                        <p class="text-muted mb-2">{{ ipo.company.symbol }} | {{ ipo.company.industry }}</p>
+                        <span class="badge bg-{% if ipo.status == 'upcoming' %}primary{% elif ipo.status == 'ongoing' %}warning{% else %}success{% endif %} fs-6">
+                            {{ ipo.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="h3 text-primary">₹{{ ipo.price_band_min }} - ₹{{ ipo.price_band_max }}</div>
+                        <p class="text-muted mb-0">Price Band</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- IPO Details -->
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Basic Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>IPO Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Issue Size:</strong></td>
+                                <td>₹{{ ipo.issue_size }} Crores</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Shares:</strong></td>
+                                <td>{{ ipo.total_shares|floatformat:0 }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Lot Size:</strong></td>
+                                <td>{{ ipo.lot_size }} shares</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Exchange:</strong></td>
+                                <td>{{ ipo.get_exchange_display }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Open Date:</strong></td>
+                                <td>{{ ipo.open_date|date:"d M Y" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Close Date:</strong></td>
+                                <td>{{ ipo.close_date|date:"d M Y" }}</td>
+                            </tr>
+                            {% if ipo.listing_date %}
+                            <tr>
+                                <td><strong>Listing Date:</strong></td>
+                                <td>{{ ipo.listing_date|date:"d M Y" }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <td><strong>Lead Managers:</strong></td>
+                                <td>{{ ipo.lead_managers }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Company Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Company Information</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ ipo.company.description }}</p>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <p><strong>Founded:</strong> {{ ipo.company.founded_year|default:"N/A" }}</p>
+                        <p><strong>Headquarters:</strong> {{ ipo.company.headquarters }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>CEO:</strong> {{ ipo.company.ceo|default:"N/A" }}</p>
+                        <p><strong>Employees:</strong> {{ ipo.company.employees|default:"N/A" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Data -->
+        {% if financials %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Financial Metrics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Revenue (₹ Cr)</h6>
+                        <p>FY-1: {{ financials.revenue_fy1|default:"N/A" }}</p>
+                        <p>FY-2: {{ financials.revenue_fy2|default:"N/A" }}</p>
+                        <p>FY-3: {{ financials.revenue_fy3|default:"N/A" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Profit (₹ Cr)</h6>
+                        <p>FY-1: {{ financials.profit_fy1|default:"N/A" }}</p>
+                        <p>FY-2: {{ financials.profit_fy2|default:"N/A" }}</p>
+                        <p>FY-3: {{ financials.profit_fy3|default:"N/A" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Market Data -->
+        {% if market_data %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Market Data</h5>
+            </div>
+            <div class="card-body">
+                {% if market_data.grey_market_premium %}
+                <p><strong>GMP:</strong> ₹{{ market_data.grey_market_premium }}</p>
+                {% endif %}
+                {% if market_data.analyst_rating %}
+                <p><strong>Rating:</strong> 
+                    <span class="badge bg-{% if market_data.analyst_rating == 'strong_buy' %}success{% elif market_data.analyst_rating == 'buy' %}primary{% elif market_data.analyst_rating == 'hold' %}warning{% else %}danger{% endif %}">
+                        {{ market_data.get_analyst_rating_display }}
+                    </span>
+                </p>
+                {% endif %}
+                {% if market_data.risk_score %}
+                <p><strong>Risk Score:</strong> {{ market_data.risk_score }}/10</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Quick Actions</h5>
+            </div>
+            <div class="card-body d-grid gap-2">
+                <button class="btn btn-primary" onclick="analyzeIPO('{{ ipo.company.name }}')">
+                    <i class="fas fa-robot me-1"></i>AI Analysis
+                </button>
+                <a href="{% url 'risk_assessment' %}" class="btn btn-outline-success">
+                    <i class="fas fa-shield-alt me-1"></i>Risk Assessment
+                </a>
+                <a href="{% url 'market_analysis' %}" class="btn btn-outline-info">
+                    <i class="fas fa-chart-bar me-1"></i>Market Trends
+                </a>
+            </div>
+        </div>
+
+        <!-- Related News -->
+        {% if news %}
+        <div class="card">
+            <div class="card-header">
+                <h5>Related News</h5>
+            </div>
+            <div class="card-body">
+                {% for news_item in news %}
+                    <div class="mb-3 pb-2 border-bottom">
+                        <h6 class="mb-1">{{ news_item.title|truncatewords:8 }}</h6>
+                        <small class="text-muted">{{ news_item.published_date|date:"d M Y" }}</small>
+                    </div>
+                {% endfor %}
+                <a href="{% url 'news' %}?ipo={{ ipo.id }}" class="btn btn-outline-primary btn-sm">
+                    View All News
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function analyzeIPO(companyName) {
+        const question = `Analyze ${companyName} IPO in detail. What are the pros and cons?`;
+        window.open(`/ai-chat/?q=${encodeURIComponent(question)}`, '_blank');
+    }
+</script>
+{% endblock %}

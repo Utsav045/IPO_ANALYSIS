@@ -1,0 +1,79 @@
+{% extends 'ipo_app/base.html' %}
+
+{% block title %}Portfolio - IPO Compass{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <h2><i class="fas fa-briefcase me-2"></i>My IPO Portfolio</h2>
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="h4">₹{{ total_investment|floatformat:0 }}</div>
+                        <small>Total Investment</small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="h4">₹{{ current_value|floatformat:0 }}</div>
+                        <small>Current Value</small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="h4 text-{% if total_gain_loss >= 0 %}success{% else %}danger{% endif %}">
+                            {% if total_gain_loss >= 0 %}+{% endif %}₹{{ total_gain_loss|floatformat:0 }}
+                        </div>
+                        <small>Total P&L</small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="h4 text-{% if total_gain_loss_percent >= 0 %}success{% else %}danger{% endif %}">
+                            {% if total_gain_loss_percent >= 0 %}+{% endif %}{{ total_gain_loss_percent|floatformat:2 }}%
+                        </div>
+                        <small>Returns</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Holdings</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>IPO</th>
+                                <th>Quantity</th>
+                                <th>Buy Price</th>
+                                <th>Current Price</th>
+                                <th>P&L</th>
+                                <th>Returns %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for holding in portfolio %}
+                                <tr>
+                                    <td><strong>{{ holding.ipo }}</strong></td>
+                                    <td>{{ holding.quantity }}</td>
+                                    <td>₹{{ holding.buy_price }}</td>
+                                    <td>₹{{ holding.current_price }}</td>
+                                    <td class="text-{% if holding.gain_loss >= 0 %}success{% else %}danger{% endif %}">
+                                        {% if holding.gain_loss >= 0 %}+{% endif %}₹{{ holding.gain_loss|floatformat:0 }}
+                                    </td>
+                                    <td class="text-{% if holding.gain_loss_percent >= 0 %}success{% else %}danger{% endif %}">
+                                        {% if holding.gain_loss_percent >= 0 %}+{% endif %}{{ holding.gain_loss_percent|floatformat:2 }}%
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
